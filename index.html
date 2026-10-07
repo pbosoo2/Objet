@@ -33,7 +33,7 @@ for(const item of items){
  if(location.protocol==='file:'){notice.textContent='GitHub Pages에 게시한 뒤 링크 복사를 사용하세요.';return}
  try{await navigator.clipboard.writeText(url);notice.textContent=item.title+' 링크를 복사했어요.'}catch{notice.textContent='복사할 주소: '+url}
  });actions.append(copy);info.append(actions);
- const filename=document.createElement('p');filename.className='filename';filename.textContent=item.file;info.append(filename);card.append(info);grid.append(card)
+ const filename=document.createElement('p');filename.className='filename';filename.textContent=item.file.split('?')[0];info.append(filename);card.append(info);grid.append(card)
 }
 </script>
 </body></html>
