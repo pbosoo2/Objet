@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><title>마법 오브제 보관함</title>
+<style>
+:root{color-scheme:dark;--bg:#191919;--panel:#202020;--line:#ffffff16;--text:#f4f1ea;--muted:#b2afa9;--gold:#dfc38b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6}
+main{max-width:1120px;margin:auto;padding:64px 32px 48px}header{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:32px}.eyebrow{color:var(--gold);letter-spacing:.18em;font-size:14px;font-weight:600;margin:0 0 12px}h1{font-size:clamp(28px,5vw,40px);font-weight:600;letter-spacing:-.045em;line-height:1.25;margin:0 0 16px}.intro{margin:0;color:var(--muted);max-width:580px}.section-top{display:flex;align-items:center;gap:12px;margin-bottom:20px}h2{font-size:18px;margin:0;font-weight:600}.count{font-size:14px;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}.preview{display:block;width:100%;height:280px;border:0;background:var(--bg);pointer-events:none}.info{border-top:1px solid var(--line);padding:24px}.category{font-size:14px;color:var(--gold);margin:0 0 8px}.info h3{font-size:20px;line-height:1.4;margin:0 0 8px;font-weight:600}.description{font-size:15px;color:var(--muted);margin:0 0 24px}.actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px}.open,.copy{min-height:44px;padding:10px 16px;border-radius:8px;font-size:14px;text-decoration:none;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1.5}.open{color:#191919;background:var(--gold);border:1px solid var(--gold)}.copy{color:var(--text);background:transparent;border:1px solid #ffffff33;font-family:inherit}.open:hover{background:#edd6a9}.copy:hover{background:#ffffff0a}a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:4px}.filename{color:var(--muted);font-size:14px;margin:16px 0 0;overflow-wrap:anywhere}footer{margin-top:48px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:24px}#notice{min-height:24px;margin:16px 0 0;font-size:14px;color:var(--gold)}@media(max-width:700px){main{padding:40px 20px}.grid{grid-template-columns:1fr}.preview{height:260px}.info{padding:20px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<main>
+<header><p class="eyebrow">THE OBJECT ARCHIVE</p><h1>마법 오브제 보관함</h1><p class="intro">기록의 공간에 작은 마법을 더하세요.<br>마음에 드는 오브제를 열거나, 링크를 복사해 사용하세요.</p></header>
+<section aria-labelledby="list-title"><div class="section-top"><h2 id="list-title">오브제 목록</h2><span class="count" id="count"></span></div><div class="grid" id="objects"></div><p id="notice" role="status" aria-live="polite"></p></section>
+<footer>오브제만 보려면 ‘오브제 열기’를 선택하세요. 노션에는 개별 오브제 주소를 임베드하면 됩니다.</footer>
+</main>
+<script src="objects.js"></script>
+<script>
+const grid=document.getElementById('objects');
+const items=window.MAGIC_OBJECTS||[];
+document.getElementById('count').textContent=items.length+'개의 오브제';
+for(const item of items){
+ const card=document.createElement('article');card.className='card';
+ const preview=document.createElement('iframe');preview.className='preview';preview.src=item.file;preview.title=item.title+' 미리보기';preview.loading='lazy';preview.tabIndex=-1;preview.setAttribute('aria-hidden','true');card.append(preview);
+ const info=document.createElement('div');info.className='info';
+ for(const [tag,cls,text] of [['p','category',item.category],['h3','',item.title],['p','description',item.description]]){const el=document.createElement(tag);el.className=cls;el.textContent=text;info.append(el)}
+ const actions=document.createElement('div');actions.className='actions';
+ const link=document.createElement('a');link.className='open';link.href=item.file;link.textContent='오브제 열기';actions.append(link);
+ const copy=document.createElement('button');copy.type='button';copy.className='copy';copy.textContent='링크 복사';copy.addEventListener('click',async()=>{
+ const url=new URL(item.file,location.href).href;
+ const notice=document.getElementById('notice');
+ if(location.protocol==='file:'){notice.textContent='GitHub Pages에 게시한 뒤 링크 복사를 사용하세요.';return}
+ try{await navigator.clipboard.writeText(url);notice.textContent=item.title+' 링크를 복사했어요.'}catch{notice.textContent='복사할 주소: '+url}
+ });actions.append(copy);info.append(actions);
+ const filename=document.createElement('p');filename.className='filename';filename.textContent=item.file;info.append(filename);card.append(info);grid.append(card)
+}
+</script>
+</body></html>
